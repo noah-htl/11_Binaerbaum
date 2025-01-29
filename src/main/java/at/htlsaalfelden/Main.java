@@ -16,5 +16,7 @@ public class Main {
         tree.preOrder(System.out::print);
         System.out.println();
         tree.levelOrder(System.out::print);
+
+        System.out.println(tree.getDepth());
     }
 }

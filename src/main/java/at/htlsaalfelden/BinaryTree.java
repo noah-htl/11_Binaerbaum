@@ -8,13 +8,15 @@ import java.util.function.Consumer;
 public class BinaryTree<T extends Comparable<T>> {
 
     private TreeNode<T> root;
+    private int depth;
 
     public BinaryTree() {
-        root = null;
+        this((TreeNode<T>) null);
     }
 
     public BinaryTree(TreeNode<T> root) {
         this.root = root;
+        this.depth = 0;
     }
 
     public BinaryTree(T root) {
@@ -40,23 +42,29 @@ public class BinaryTree<T extends Comparable<T>> {
     public void add(TreeNode<T> node) {
         if(this.getRoot() == null) {
             this.setRoot(node);
+            node.setLevelFromTop(1);
+            this.depth = 1;
         } else {
-            add(node, this.getRoot());
+            this.depth = add(node, this.getRoot(), 2);
         }
     }
 
-    public void add(TreeNode<T> node, TreeNode<T> root) {
+    private int add(TreeNode<T> node, TreeNode<T> root, int levelStart) {
         if(node.getData().compareTo(root.getData()) < 0) {
             if(root.getLeft() == null) {
+                node.setLevelFromTop(root.getLevelFromTop() + 1);
                 root.setLeft(node);
+                return levelStart;
             } else {
-                add(node, root.getLeft());
+                return add(node, root.getLeft(), levelStart+1);
             }
         } else {
             if(root.getRight() == null) {
+                node.setLevelFromTop(root.getLevelFromTop() + 1);
                 root.setRight(node);
+                return levelStart;
             } else {
-                add(node, root.getRight());
+                return add(node, root.getRight(), levelStart+1);
             }
         }
     }
@@ -101,6 +109,10 @@ public class BinaryTree<T extends Comparable<T>> {
         consumer.accept(root.getData());
     }
 
+    public int getDepth() {
+        return depth;
+    }
+
     private void levelOrder(Consumer<LevelData<T>> consumer, List<TreeNode<T>> roots) {
         List<TreeNode<T>> nodes = new ArrayList<>();
 
@@ -124,11 +136,14 @@ public class BinaryTree<T extends Comparable<T>> {
         if(!nodes.isEmpty()) {
             levelOrder(consumer, nodes);
         }
+
+
     }
 
 
     public static class TreeNode<T extends Comparable<T>> {
         private final T data;
+        private int levelFromTop;
         private TreeNode<T> left;
         private TreeNode<T> right;
 
@@ -164,6 +179,14 @@ public class BinaryTree<T extends Comparable<T>> {
 
         public void setRight(T right) {
             this.right = new TreeNode<>(right);
+        }
+
+        public int getLevelFromTop() {
+            return levelFromTop;
+        }
+
+        public void setLevelFromTop(int level) {
+            this.levelFromTop = level;
         }
     }
 
